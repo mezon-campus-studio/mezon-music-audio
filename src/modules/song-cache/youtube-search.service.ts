@@ -5,6 +5,7 @@ import { access } from 'node:fs/promises';
 import { join } from 'node:path';
 import { promisify } from 'node:util';
 import { getYoutubeTrackInfo } from '@/utils/youtube.util';
+import { buildYtdlpCliArgs } from '@/utils/ytdlp.util';
 
 const execFileAsync = promisify(execFile);
 const YT_DLP_BIN = process.platform === 'win32' ? 'yt-dlp.exe' : 'yt-dlp';
@@ -54,7 +55,13 @@ export class YoutubeSearchService implements OnModuleInit {
         try {
             const { stdout } = await execFileAsync(
                 this.ytDlpPath,
-                [`ytsearch${limit}:${trimmedQuery}`, '--flat-playlist', '-j', '--no-warnings'],
+                [
+                    ...buildYtdlpCliArgs(this.configService),
+                    `ytsearch${limit}:${trimmedQuery}`,
+                    '--flat-playlist',
+                    '-j',
+                    '--no-warnings',
+                ],
                 { timeout: 30_000, maxBuffer: 4 * 1024 * 1024 },
             );
 

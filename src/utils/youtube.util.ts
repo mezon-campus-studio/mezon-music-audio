@@ -10,6 +10,9 @@ const FETCH_HEADERS = {
     'User-Agent': 'Mozilla/5.0 (compatible; PeonyyMusicBot/1.0)',
 };
 
+export const MAX_SONG_DURATION_SECONDS = 600;
+export const MAX_AUDIO_SIZE_BYTES = 10 * 1024 * 1024;
+
 export interface TrackInfo {
     trackName: string;
     thumbnailUrl?: string;

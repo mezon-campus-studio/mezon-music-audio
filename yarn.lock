@@ -8948,7 +8948,7 @@ __metadata:
     eslint-plugin-prettier: "npm:^5.2.2"
     globals: "npm:^17.0.0"
     jest: "npm:^30.0.0"
-    mezon-sdk: "npm:^2.8.53"
+    mezon-sdk: "patch:mezon-sdk@npm%3A2.8.53#~/.yarn/patches/mezon-sdk-npm-2.8.53-93bccbf913.patch"
     prettier: "npm:^3.4.2"
     prisma: "npm:^7.9.0"
     reflect-metadata: "npm:^0.2.2"
@@ -8966,7 +8966,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"mezon-sdk@npm:^2.8.53":
+"mezon-sdk@npm:2.8.53":
   version: 2.8.53
   resolution: "mezon-sdk@npm:2.8.53"
   dependencies:
@@ -8980,6 +8980,23 @@ __metadata:
     npm-run-all: "npm:^4.1.5"
     ws: "npm:^8.18.0"
   checksum: 10c0/af320a1a9db18f09a99260ee38821349c1d4ce06f0318fbe10ffb6435f39ae942e0ecc9002b0253cfd37655bffa95d1614ca6bca1e28b8b20c96e709e3968b97
+  languageName: node
+  linkType: hard
+
+"mezon-sdk@patch:mezon-sdk@npm%3A2.8.53#~/.yarn/patches/mezon-sdk-npm-2.8.53-93bccbf913.patch":
+  version: 2.8.53
+  resolution: "mezon-sdk@patch:mezon-sdk@npm%3A2.8.53#~/.yarn/patches/mezon-sdk-npm-2.8.53-93bccbf913.patch::version=2.8.53&hash=964fc6"
+  dependencies:
+    "@types/ws": "npm:^8.5.12"
+    base64-arraybuffer: "npm:^1.0.2"
+    better-sqlite3: "npm:^11.10.0"
+    eventsource: "npm:^2.0.2"
+    jest-cucumber: "npm:^3.0.1"
+    js-base64: "npm:^3.7.8"
+    mmn-client-js: "npm:^1.0.16"
+    npm-run-all: "npm:^4.1.5"
+    ws: "npm:^8.18.0"
+  checksum: 10c0/1025ef71f025afe570245c64986894505855c5586f673101804e87936e5a0bd83bd13f8bb4c8d90c0afc55d8a63dc414d3518a1c55afb25f9525093233c693a3
   languageName: node
   linkType: hard
 

@@ -4,14 +4,20 @@ import { execFile } from 'node:child_process';
 import { access, mkdir, readdir, rm, stat } from 'node:fs/promises';
 import { join } from 'node:path';
 import { promisify } from 'node:util';
+import { MAX_AUDIO_SIZE_BYTES } from '@/utils/youtube.util';
+import { getYtdlpExecFlags, toYoutubeWatchUrl } from '@/utils/ytdlp.util';
 import { create } from 'youtube-dl-exec';
 
 const execFileAsync = promisify(execFile);
 const YT_DLP_BIN = process.platform === 'win32' ? 'yt-dlp.exe' : 'yt-dlp';
 const DEFAULT_YT_DLP_PATH = join(process.cwd(), 'node_modules/youtube-dl-exec/bin', YT_DLP_BIN);
-const MAX_AUDIO_SIZE_BYTES = 10 * 1024 * 1024;
+
+export interface YoutubeAudioMetadata {
+    durationSeconds?: number;
+    fileSizeBytes?: number;
+}
 export const SONG_UNPLAYABLE_MESSAGE =
-    '❌ Không thể phát bài hát này\n\n💡 Hãy thử bài khác hoặc thử lại sau nha.';
+    '❌ Không thể  thêm bài hát này\n\n💡 Hãy thử bài khác hoặc thử lại sau nha.';
 
 export interface ProcessedAudioResult {
     oggPath: string;
@@ -56,6 +62,42 @@ export class AudioProcessingService implements OnModuleInit {
         );
     }
 
+    async getYoutubeAudioMetadata(videoId: string): Promise<YoutubeAudioMetadata> {
+        const watchUrl = toYoutubeWatchUrl(videoId);
+
+        try {
+            const output = await this.youtubedl(watchUrl, {
+                ...getYtdlpExecFlags(this.configService),
+                dumpSingleJson: true,
+                noPlaylist: true,
+                format: 'bestaudio/best',
+            });
+
+            const data = (typeof output === 'string' ? JSON.parse(output) : output) as {
+                duration?: number;
+                filesize?: number;
+                filesize_approx?: number;
+            };
+
+            const durationSeconds =
+                typeof data.duration === 'number' && data.duration > 0
+                    ? Math.ceil(data.duration)
+                    : undefined;
+            const fileSizeBytes = data.filesize ?? data.filesize_approx;
+
+            return {
+                durationSeconds,
+                fileSizeBytes:
+                    typeof fileSizeBytes === 'number' && fileSizeBytes > 0
+                        ? fileSizeBytes
+                        : undefined,
+            };
+        } catch (error) {
+            this.logger.warn(`Cannot fetch audio metadata for ${videoId}: ${String(error)}`);
+            return {};
+        }
+    }
+
     async downloadAndConvertToOgg(
         youtubeUrl: string,
         videoId: string,
@@ -68,9 +110,11 @@ export class AudioProcessingService implements OnModuleInit {
         const downloadTemplate = join(workDir, 'audio.%(ext)s');
         const oggPath = join(workDir, `${videoId}.ogg`);
 
-        this.logger.log(`Downloading audio: ${youtubeUrl}`);
+        const watchUrl = toYoutubeWatchUrl(videoId);
+        this.logger.log(`Downloading audio: ${watchUrl}`);
         try {
-            await this.youtubedl(youtubeUrl, {
+            await this.youtubedl(watchUrl, {
+                ...getYtdlpExecFlags(this.configService),
                 extractAudio: true,
                 audioFormat: 'best',
                 output: downloadTemplate,

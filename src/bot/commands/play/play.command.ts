@@ -11,7 +11,7 @@ import {
     getNowPlayingEmbedMessage,
     getEmptyPlaylistMessage,
     getNeedVoiceChannelMessage,
-    getUserVoiceChannel,
+    resolvePlayVoiceChannel,
 } from '@/utils';
 
 @Injectable()
@@ -35,7 +35,23 @@ export class PlayCommand implements BotCommand {
             const clanId = event.clan_id as string;
             const client = this.mcService.getClient();
 
-            const voiceChannel = await getUserVoiceChannel(client, clanId, userId);
+            const { voiceChannel, error: voiceChannelError } = await resolvePlayVoiceChannel(
+                client,
+                clanId,
+                userId,
+                event.content,
+            );
+
+            if (voiceChannelError === 'not_voice') {
+                await this.mcService.updateMessage(
+                    repliedMessage,
+                    getErrorMessage(
+                        'Hashtag không phải kênh thoại',
+                        'Hãy tag kênh thoại Mezon nha.',
+                    ),
+                );
+                return;
+            }
 
             if (!voiceChannel) {
                 await this.mcService.updateMessage(repliedMessage, getNeedVoiceChannelMessage());

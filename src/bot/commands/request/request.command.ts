@@ -43,20 +43,75 @@ export class RequestCommand implements BotCommand {
 
             const trackInfo = await getYoutubeTrackInfo(songUrl);
 
+            if (!trackInfo) {
+                await this.mcService.updateMessage(
+                    repliedMessage,
+                    getErrorMessage(
+                        'Không tìm thấy bài hát',
+                        'Hãy kiểm tra lại link YouTube và thử lại nha.',
+                    ),
+                );
+                return;
+            }
+
+            await this.songResolverService.validateBeforeResolve(songUrl, trackInfo);
+
             await this.mcService.updateMessage(
                 repliedMessage,
                 getEmbedMessage({
                     color: getRandomPastelHexColor(),
-                    title: trackInfo?.trackName ?? '🎵 Đang thêm bài vào danh sách...',
+                    title: trackInfo.trackName,
                     description: '⏳ Đang thêm bài hát, vui lòng đợi...',
-                    thumbnail: trackInfo?.thumbnailUrl ? { url: trackInfo.thumbnailUrl } : undefined,
-                    author: trackInfo?.authorName
+                    thumbnail: trackInfo.thumbnailUrl ? { url: trackInfo.thumbnailUrl } : undefined,
+                    author: trackInfo.authorName
                         ? { name: trackInfo.authorName, url: trackInfo.authorUrl }
                         : undefined,
                 }),
             );
 
-            const resolved = await this.songResolverService.resolve(songUrl);
+            const resolved = await this.songResolverService.resolve(
+                songUrl,
+                {
+                    onQueued: async (position) => {
+                        await this.mcService.updateMessage(
+                            repliedMessage,
+                            getEmbedMessage({
+                                color: getRandomPastelHexColor(),
+                                title: trackInfo.trackName,
+                                description: [
+                                    '⏳ **Đang xếp hàng xử lý...**',
+                                    '',
+                                    '🚦 Hiện có **10** người đang thêm bài cùng lúc.',
+                                    `📍 Bạn đang chờ — còn **${position}** người trước bạn.`,
+                                ].join('\n'),
+                                thumbnail: trackInfo.thumbnailUrl
+                                    ? { url: trackInfo.thumbnailUrl }
+                                    : undefined,
+                                author: trackInfo.authorName
+                                    ? { name: trackInfo.authorName, url: trackInfo.authorUrl }
+                                    : undefined,
+                            }),
+                        );
+                    },
+                    onDownloading: async () => {
+                        await this.mcService.updateMessage(
+                            repliedMessage,
+                            getEmbedMessage({
+                                color: getRandomPastelHexColor(),
+                                title: trackInfo.trackName,
+                                description: '⏳ Đang thêm bài hát, vui lòng đợi...',
+                                thumbnail: trackInfo.thumbnailUrl
+                                    ? { url: trackInfo.thumbnailUrl }
+                                    : undefined,
+                                author: trackInfo.authorName
+                                    ? { name: trackInfo.authorName, url: trackInfo.authorUrl }
+                                    : undefined,
+                            }),
+                        );
+                    },
+                },
+                { useConcurrencyLimit: true },
+            );
 
             const song = await this.voicePlaylistService.addSong(
                 clanId,

@@ -1,3 +1,16 @@
+diff --git a/dist/cjs/mezon-client/manager/socket_manager.js b/dist/cjs/mezon-client/manager/socket_manager.js
+index 5d03531c526af2b53fc4813d294794650f9e4d30..3cd5ea560cf747ef681956504160af629ae902d7 100644
+--- a/dist/cjs/mezon-client/manager/socket_manager.js
++++ b/dist/cjs/mezon-client/manager/socket_manager.js
+@@ -238,7 +238,7 @@ class SocketManager {
+         const currentContentLength = JSON.stringify((_a = dataUpdateMessage.content) !== null && _a !== void 0 ? _a : {}).length;
+         if (currentContentLength > 4000)
+             throw new Error(`message.content exceeds the allowed length! Content exceeds allowed length. Maximum total of 4000 characters. Current length: ${currentContentLength}!`);
+-        return this.socket.updateChannelMessage(dataUpdateMessage.clan_id, dataUpdateMessage.channel_id, dataUpdateMessage.mode, dataUpdateMessage.is_public, dataUpdateMessage.message_id, dataUpdateMessage.content, (_b = dataUpdateMessage === null || dataUpdateMessage === void 0 ? void 0 : dataUpdateMessage.mentions) !== null && _b !== void 0 ? _b : [], (_c = dataUpdateMessage === null || dataUpdateMessage === void 0 ? void 0 : dataUpdateMessage.attachments) !== null && _c !== void 0 ? _c : [], dataUpdateMessage === null || dataUpdateMessage === void 0 ? void 0 : dataUpdateMessage.create_time_seconds, (_d = dataUpdateMessage === null || dataUpdateMessage === void 0 ? void 0 : dataUpdateMessage.hideEditted) !== null && _d !== void 0 ? _d : false, dataUpdateMessage === null || dataUpdateMessage === void 0 ? void 0 : dataUpdateMessage.topic_id, dataUpdateMessage === null || dataUpdateMessage === void 0 ? void 0 : dataUpdateMessage.is_update_msg_topic);
++        return this.socket.updateChannelMessage(dataUpdateMessage.clan_id, dataUpdateMessage.channel_id, dataUpdateMessage.mode, dataUpdateMessage.is_public, dataUpdateMessage.message_id, dataUpdateMessage.content, (_b = dataUpdateMessage === null || dataUpdateMessage === void 0 ? void 0 : dataUpdateMessage.mentions) !== null && _b !== void 0 ? _b : [], (_c = dataUpdateMessage === null || dataUpdateMessage === void 0 ? void 0 : dataUpdateMessage.attachments) !== null && _c !== void 0 ? _c : [], dataUpdateMessage === null || dataUpdateMessage === void 0 ? void 0 : dataUpdateMessage.create_time_seconds, (_d = dataUpdateMessage === null || dataUpdateMessage === void 0 ? void 0 : dataUpdateMessage.hideEditted) !== null && _d !== void 0 ? _d : true, dataUpdateMessage === null || dataUpdateMessage === void 0 ? void 0 : dataUpdateMessage.topic_id, dataUpdateMessage === null || dataUpdateMessage === void 0 ? void 0 : dataUpdateMessage.is_update_msg_topic);
+     }
+     async writeMessageReaction(dataReactionMessage) {
+         var _a, _b;
 diff --git a/dist/cjs/mezon-client/structures/TextChannel.js b/dist/cjs/mezon-client/structures/TextChannel.js
 index b4b5f22db4b5887477ad7c67dd06ea6311a401f0..a8492d562d38a44cb7ba7116da6427f8200f1b54 100644
 --- a/dist/cjs/mezon-client/structures/TextChannel.js
@@ -11,6 +24,41 @@ index b4b5f22db4b5887477ad7c67dd06ea6311a401f0..a8492d562d38a44cb7ba7116da6427f8
          if (!meetingCode) {
              return { error: "Channel not voice channel." };
          }
+diff --git a/dist/cjs/socket.js b/dist/cjs/socket.js
+index 7ff0d9382feb47e6f1f7b75676c540f4c4a1583e..5abed156642e69b714eb7ee9afaefbc67b8499fc 100644
+--- a/dist/cjs/socket.js
++++ b/dist/cjs/socket.js
+@@ -393,7 +393,7 @@ class DefaultSocket {
+                 create_time_seconds: create_time_seconds,
+                 mode: mode,
+                 is_public: is_public,
+-                hide_editted: hideEditted,
++                hide_editted: true,
+                 topic_id: topic_id,
+                 is_update_msg_topic: is_update_msg_topic,
+             },
+@@ -434,7 +434,7 @@ class DefaultSocket {
+             mentions,
+             attachments,
+             create_time_seconds,
+-            hide_editted: hideEditted,
++            hide_editted: true,
+             topic_id,
+             is_update_msg_topic,
+         })).finish();
+diff --git a/dist/esm/mezon-client/manager/socket_manager.js b/dist/esm/mezon-client/manager/socket_manager.js
+index 72fe050301e60f5bed006868407b18a0c1a610ef..229634649515a8cfd4b151212f6af1c8c252159b 100644
+--- a/dist/esm/mezon-client/manager/socket_manager.js
++++ b/dist/esm/mezon-client/manager/socket_manager.js
+@@ -233,7 +233,7 @@ export class SocketManager {
+         const currentContentLength = JSON.stringify(dataUpdateMessage.content ?? {}).length;
+         if (currentContentLength > 4000)
+             throw new Error(`message.content exceeds the allowed length! Content exceeds allowed length. Maximum total of 4000 characters. Current length: ${currentContentLength}!`);
+-        return this.socket.updateChannelMessage(dataUpdateMessage.clan_id, dataUpdateMessage.channel_id, dataUpdateMessage.mode, dataUpdateMessage.is_public, dataUpdateMessage.message_id, dataUpdateMessage.content, dataUpdateMessage?.mentions ?? [], dataUpdateMessage?.attachments ?? [], dataUpdateMessage?.create_time_seconds, dataUpdateMessage?.hideEditted ?? false, dataUpdateMessage?.topic_id, dataUpdateMessage?.is_update_msg_topic);
++        return this.socket.updateChannelMessage(dataUpdateMessage.clan_id, dataUpdateMessage.channel_id, dataUpdateMessage.mode, dataUpdateMessage.is_public, dataUpdateMessage.message_id, dataUpdateMessage.content, dataUpdateMessage?.mentions ?? [], dataUpdateMessage?.attachments ?? [], dataUpdateMessage?.create_time_seconds, dataUpdateMessage?.hideEditted ?? true, dataUpdateMessage?.topic_id, dataUpdateMessage?.is_update_msg_topic);
+     }
+     async writeMessageReaction(dataReactionMessage) {
+         try {
 diff --git a/dist/esm/mezon-client/structures/TextChannel.js b/dist/esm/mezon-client/structures/TextChannel.js
 index 6b6b7cb94dae3934925c180e05436815310fbe50..3cb95ad8e01ca9571e2b4a7fc82d042e102c4bc9 100644
 --- a/dist/esm/mezon-client/structures/TextChannel.js
@@ -24,3 +72,25 @@ index 6b6b7cb94dae3934925c180e05436815310fbe50..3cb95ad8e01ca9571e2b4a7fc82d042e
          if (!meetingCode) {
              return { error: "Channel not voice channel." };
          }
+diff --git a/dist/esm/socket.js b/dist/esm/socket.js
+index b70972fda0ca4d640098ec76e1767de682f7d31a..7f778ab6fd7283560d1651714d8d49e40daa6afc 100644
+--- a/dist/esm/socket.js
++++ b/dist/esm/socket.js
+@@ -370,7 +370,7 @@ export class DefaultSocket {
+                 create_time_seconds: create_time_seconds,
+                 mode: mode,
+                 is_public: is_public,
+-                hide_editted: hideEditted,
++                hide_editted: true,
+                 topic_id: topic_id,
+                 is_update_msg_topic: is_update_msg_topic,
+             },
+@@ -411,7 +411,7 @@ export class DefaultSocket {
+             mentions,
+             attachments,
+             create_time_seconds,
+-            hide_editted: hideEditted,
++            hide_editted: true,
+             topic_id,
+             is_update_msg_topic,
+         })).finish();

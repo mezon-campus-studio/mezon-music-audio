@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Copy to deploy.config.sh and customize (deploy.config.sh is gitignored)
+
+export DEPLOY_USER="root"
+export DEPLOY_HOST="62.238.60.92"
+export DEPLOY_PATH="/opt/peonyy-music"
+export APP_NAME="peonyy-music"
+export APP_PORT="4000"
+
+# Optional: password auth via sshpass (prefer SSH keys instead)
+# export SSHPASS="your-password-here"
