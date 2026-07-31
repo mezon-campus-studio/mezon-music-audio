@@ -43,10 +43,10 @@ export class HelpCommand implements BotCommand {
 
             for (const cmd of allCommands) {
                 if (cmd.role !== 'public' && !isElevated) continue;
-                lines.push(`\`*dj ${cmd.name}\` - ${cmd.description}`);
+                lines.push(`*dj ${cmd.name} - ${cmd.description}`);
             }
 
-            lines.push('`*dj <mô tả vibe/mood>*` - Gợi ý bài hát bằng AI');
+            lines.push('*dj <mô tả vibe/mood> - Gợi ý bài hát bằng AI');
 
             const embed = getEmbedMessage({
                 color: '#f6a6c1',
