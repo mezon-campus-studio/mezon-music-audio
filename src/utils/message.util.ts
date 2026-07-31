@@ -178,6 +178,8 @@ export const getNowPlayingEmbedMessage = (params: {
         .filter((line) => line !== undefined)
         .join('\n');
 
+    const djURL = getRandomDjDanceUrl(DJ_DANCE_URL);     
+    
     return getEmbedMessage({
         color: getRandomPastelHexColor() as string,
         title: `🎵 ${trackInfo.trackName}`,
@@ -187,9 +189,9 @@ export const getNowPlayingEmbedMessage = (params: {
             name: "Đang phát",
             icon_url: MUSIC_WAVE_URL,
         },
-        thumbnail: trackInfo.thumbnailUrl ? { url: trackInfo.thumbnailUrl } : undefined,
+        thumbnail: { url: djURL },
         image: {
-            url: getRandomDjDanceUrl(DJ_DANCE_URL),
+            url: djURL,
         },
     });
 };
